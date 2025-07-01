@@ -98,10 +98,14 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - id: github
+        uses: ASzc/change-string-case-action@v6
+        with:
+          repository_owner: ${{ github.repository_owner }}
       - name: Re-tag image
         env:
           REGISTRY_NAME: 'ghcr.io'
-          REPOSITORY: ${{ github.repository_owner }}/immich-server
+          REPOSITORY: ${{ steps.github.repository_owner.outputs.lowercase }}/immich-server
           TAG_OLD: main${{ matrix.suffix }}
           TAG_PR: ${{ github.event.number == 0 && github.ref_name || format('pr-{0}', github.event.number) }}${{ matrix.suffix }}
           TAG_COMMIT: commit-${{ github.event_name != 'pull_request' && github.sha || github.event.pull_request.head.sha }}${{ matrix.suffix }}
