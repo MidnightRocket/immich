@@ -83,6 +83,11 @@ jobs:
           version=$(jq -r '.version' cli/package.json)
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
+      - id: github
+        uses: ASzc/change-string-case-action@v6
+        with:
+          repository_owner: ${{ github.repository_owner }}
+
       - name: Generate docker image tags
         id: metadata
         uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5.7.0
@@ -90,7 +95,7 @@ jobs:
           flavor: |
             latest=false
           images: |
-            name=ghcr.io/${{ github.repository_owner }}/immich-cli
+            name=ghcr.io/${{ steps.github.repository_owner.outputs.lowercase }}/immich-cli
           tags: |
             type=raw,value=${{ steps.package-version.outputs.version }},enable=${{ github.event_name == 'release' }}
             type=raw,value=latest,enable=${{ github.event_name == 'release' }}
